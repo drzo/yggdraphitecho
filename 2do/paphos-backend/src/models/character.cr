@@ -19,5 +19,6 @@ class Character < BaseModel
     belongs_to creator : User
     has_many chat_participations : ChatParticipant
     has_many chats : Chat, through: [:chat_participations, :chat]
+    has_many messages : Message
   end
 end

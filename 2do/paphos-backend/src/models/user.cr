@@ -8,6 +8,7 @@ class User < BaseModel
 
     has_many characters : Character
     has_many chats : Chat
+    has_many messages : Message
   end
 
   def emailable : Carbon::Address

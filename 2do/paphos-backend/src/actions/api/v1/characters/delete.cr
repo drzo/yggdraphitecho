@@ -5,10 +5,19 @@ class Api::V1::Characters::Delete < ApiAction
     character = CharacterQuery.new.slug(character_slug).first
     ensure_owned_by_current_user!(character)
 
-    # TODO(11b): Correctly handle deletion failures due to foreign key
-    # constraint failures by sending an adequate error message.
-    DeleteCharacter.delete!(character)
+    # Check if character is used in any chats (including from other users)
+    participant_count = ChatParticipantQuery.new
+      .character_id(character.id)
+      .select_count
 
-    head :ok
+    if participant_count > 0
+      json ErrorSerializer.new(
+        message: "Cannot delete character",
+        details: "This character is being used in active chats. Please remove it from all chats first."
+      ), status: 400
+    else
+      DeleteCharacter.delete!(character)
+      head :ok
+    end
   end
 end

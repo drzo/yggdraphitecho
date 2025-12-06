@@ -8,6 +8,7 @@ class Chat < BaseModel
     column name : String?
     has_many participants : ChatParticipant
     has_many characters : Character, through: [:participants, :character]
+    has_many messages : Message
 
     created_at : Time
     updated_at : Time

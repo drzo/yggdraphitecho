@@ -1,0 +1,139 @@
+# LLMChat Configuration File
+# Copy to ~/.config/llmchat/config.yaml and customize
+
+# ---- Model Configuration ----
+model_path: ~/.llmchat/models/llama-3.1-8b-q4.gguf
+model_type: llama                    # llama, mistral, phi, etc.
+context_size: 8192                   # Context window size
+threads: -1                          # CPU threads (-1 = auto)
+batch_size: 512                      # Batch size for prompt processing
+gpu_layers: 0                        # Number of layers to offload to GPU (0 = CPU only)
+
+# ---- Generation Parameters ----
+temperature: 0.7                     # Randomness (0.0-2.0)
+top_p: 0.9                          # Nucleus sampling
+top_k: 40                           # Top-k sampling
+repeat_penalty: 1.1                 # Penalty for repetition
+max_tokens: 2048                    # Maximum response length
+seed: -1                            # RNG seed (-1 = random)
+
+# ---- Behavior ----
+stream: true                        # Stream responses token-by-token
+save_history: true                  # Save conversation history
+save_sessions: true                 # Persist sessions to disk
+auto_save_interval: 300             # Auto-save interval in seconds
+max_history_size: 1000              # Maximum history entries
+
+# ---- REPL Settings ----
+repl_prompt: ">>> "                 # REPL prompt
+repl_multiline: true                # Enable multi-line input
+repl_syntax_highlight: true         # Syntax highlighting in REPL
+repl_autocomplete: true             # Tab completion
+keybindings: emacs                  # emacs or vi
+
+# ---- Function Calling ----
+function_calling: true              # Enable function/tool calling
+tools_dir: ~/.config/llmchat/functions/tools
+agents_dir: ~/.config/llmchat/functions/agents
+mcp_enabled: false                  # Model Context Protocol support
+max_tool_iterations: 10             # Max function calling iterations
+
+# Default tools to load
+default_tools:
+  - execute_command
+  - fs_read
+  - fs_write
+  - fs_list
+  - get_time
+
+# ---- RAG Configuration ----
+rag_enabled: true
+rag_db_path: ~/.llmchat/rag/vectordb
+embedding_model: ~/.llmchat/models/bge-small-en-v1.5-q8.gguf
+embedding_dimension: 384
+chunk_size: 512                     # Characters per chunk
+chunk_overlap: 50                   # Overlap between chunks
+top_k_retrieval: 5                  # Number of chunks to retrieve
+similarity_threshold: 0.7           # Minimum similarity score
+
+# ---- Session Management ----
+sessions_dir: ~/.llmchat/sessions
+default_session: default
+compress_threshold: 4000            # Compress when token count exceeds
+summarize_prompt: "Summarize the discussion briefly in 200 words or less."
+summary_prompt: "This is a summary of the chat history: "
+
+# ---- Rendering ----
+markdown_rendering: true            # Render markdown in output
+syntax_highlighting: true           # Highlight code blocks
+theme: auto                         # auto, dark, light
+highlight_theme: monokai            # Code highlighting theme
+wrap_width: 100                     # Text wrapping width (0 = terminal width)
+
+# ---- Logging ----
+log_level: info                     # debug, info, warn, error
+log_file: ~/.llmchat/llmchat.log
+log_to_console: false
+
+# ---- Roles ----
+# Predefined roles for different tasks
+roles:
+  - name: default
+    description: General assistant
+    system_prompt: "You are a helpful AI assistant."
+  
+  - name: coder
+    description: Programming assistant
+    system_prompt: |
+      You are an expert programmer. Provide clear, concise code with explanations.
+      Always follow best practices and include error handling.
+  
+  - name: shell
+    description: Shell command assistant
+    system_prompt: |
+      You are a shell command expert. Generate safe, efficient shell commands.
+      Explain what each command does. Warn about destructive operations.
+  
+  - name: writer
+    description: Writing assistant
+    system_prompt: |
+      You are a professional writer. Help with clear, engaging writing.
+      Check grammar, style, and coherence.
+
+# ---- Prelude ----
+# Default role/session for different modes
+repl_prelude: null                  # Default for REPL (e.g., "role:coder")
+cmd_prelude: null                   # Default for command mode
+agent_prelude: null                 # Default session for agents
+
+# ---- Advanced ----
+# Prompt templates
+user_prompt_template: "### User:\n{content}\n\n"
+assistant_prompt_template: "### Assistant:\n{content}\n\n"
+system_prompt_template: "### System:\n{content}\n\n"
+
+# Performance tuning
+mlock: false                        # Lock model in RAM
+mmap: true                          # Use memory mapping
+numa: false                         # NUMA support
+low_vram: false                     # Low VRAM mode
+
+# Safety
+max_command_length: 10000           # Max length for execute_command
+allowed_paths: []                   # Whitelist paths for file operations (empty = all)
+denied_paths:                       # Blacklist paths
+  - /etc/passwd
+  - /etc/shadow
+  - ~/.ssh/
+
+# Network
+http_proxy: null                    # HTTP proxy for web tools
+https_proxy: null                   # HTTPS proxy
+timeout: 30                         # HTTP timeout in seconds
+
+# Document loaders (for RAG and file input)
+document_loaders:
+  pdf: "pdftotext {input} -"
+  docx: "pandoc --to plain {input}"
+  html: "html2text {input}"
+
